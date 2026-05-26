@@ -1,135 +1,52 @@
 {
-  "id": "openlegend",
-  "title": "Open Legend RPG",
-  "description": "The Open Legend RPG system for FoundryVTT!",
+	"id": "openlegend_jd",
+	"title": "Open Legend Reforged",
+  "description": "Open Legend Reforged is an independent fork of the Open Legend RPG system for Foundry VTT.",
   "authors": [
-    {
-      "name": "Andrew Garinger",
-      "discord": "agaringer#6498"
-    },
-    {
-      "name": "Beenrak"
-    }
-  ],
-  "url": "#{URL}#",
-  "license": "LICENSE.txt",
-  "version": "#{VERSION}#",
-  "compatibility": {
-    "minimum": 11,
-    "verified": 12.327
+  {
+    "name": "JD Jones (Thuckenstein on Github)"
   },
+  {
+    "name": "Andrew Garinger",
+    "discord": "agaringer#6498"
+  },
+  {
+    "name": "Beenrak"
+  },
+  {
+    "name": "Justin Karneeb",
+    "url": "https://gitlab.com/tabletop-creations/foundryvtt-openlegends/"
+  }
+],
+  "url": "https://openlegendrpg.com",
+  "license": "LICENSE.txt",
+  "version": "1.3.0",
+  "compatibility": { "minimum": "11", "verified": "13.348" },
   "scripts": [],
-  "esmodules": [
-    "module/openlegend.js"
-  ],
+  "esmodules": [ "module/openlegend.js" ],
   "styles": [
-    "css/openlegend.css"
+    "css/openlegend.css",
+    "css/openlegend-dark-override.css"
   ],
   "languages": [
-    {
-      "lang": "en",
-      "name": "English",
-      "path": "lang/en.json"
-    }
+    { "lang": "en", "name": "English", "path": "lang/en.json" }
   ],
   "packs": [
-    {
-      "name": "banes",
-      "label": "Banes",
-      "system": "openlegend",
-      "path": "./packs/banes",
-      "type": "Item",
-      "private": false
-    },
-    {
-      "name": "basic",
-      "label": "Basic",
-      "system": "openlegend",
-      "path": "./packs/basic",
-      "type": "Item",
-      "private": false
-    },
-    {
-      "name": "boons",
-      "label": "Boons",
-      "system": "openlegend",
-      "path": "./packs/boons",
-      "type": "Item",
-      "private": false
-    },
-    {
-      "name": "feats",
-      "label": "Feats",
-      "system": "openlegend",
-      "path": "./packs/feats",
-      "type": "Item",
-      "private": false
-    },
-    {
-      "name": "flaws",
-      "label": "Flaws",
-      "system": "openlegend",
-      "path": "./packs/flaws",
-      "type": "Item",
-      "private": false
-    },
-    {
-      "name": "gm-feats",
-      "label": "GM-Feats",
-      "system": "openlegend",
-      "path": "./packs/gm-feats",
-      "type": "Item",
-      "private": false
-    },
-    {
-      "name": "perks",
-      "label": "Perks",
-      "system": "openlegend",
-      "path": "./packs/perks",
-      "type": "Item",
-      "private": false
-    },
-    {
-      "name": "rules",
-      "label": "Rules",
-      "system": "openlegend",
-      "path": "./packs/rules",
-      "type": "JournalEntry",
-      "private": false
-    },
-    {
-      "name": "weapons",
-      "label": "Weapons",
-      "system": "openlegend",
-      "path": "./packs/weapons",
-      "type": "Item",
-      "private": false
-    },
-    {
-      "name": "armor",
-      "label": "Armor",
-      "system": "openlegend",
-      "path": "./packs/armor",
-      "type": "Item",
-      "private": false
-    },
-    {
-      "name": "gm-screen",
-      "label": "GM-Screen",
-      "system": "openlegend",
-      "path": "./packs/gm-screen",
-      "type": "JournalEntry",
-      "private": false
-    }
+    { "name": "banes",   "label": "Banes",   "system": "openlegend_jd", "path": "./packs/banes",   "type": "Item",        "private": false },
+    { "name": "basic",   "label": "Basic",   "system": "openlegend_jd", "path": "./packs/basic",   "type": "Item",        "private": false },
+    { "name": "boons",   "label": "Boons",   "system": "openlegend_jd", "path": "./packs/boons",   "type": "Item",        "private": false },
+    { "name": "feats",   "label": "Feats",   "system": "openlegend_jd", "path": "./packs/feats",   "type": "Item",        "private": false },
+    { "name": "flaws",   "label": "Flaws",   "system": "openlegend_jd", "path": "./packs/flaws",   "type": "Item",        "private": false },
+    { "name": "gm-feats","label": "GM-Feats","system": "openlegend_jd", "path": "./packs/gm-feats","type": "Item",        "private": false },
+    { "name": "perks",   "label": "Perks",   "system": "openlegend_jd", "path": "./packs/perks",   "type": "Item",        "private": false },
+    { "name": "rules",   "label": "Rules",   "system": "openlegend_jd", "path": "./packs/rules",   "type": "JournalEntry","private": false },
+    { "name": "weapons", "label": "Weapons", "system": "openlegend_jd", "path": "./packs/weapons", "type": "Item",        "private": false },
+    { "name": "armor",   "label": "Armor",   "system": "openlegend_jd", "path": "./packs/armor",   "type": "Item",        "private": false },
+    { "name": "gm-screen","label": "GM-Screen","system": "openlegend_jd","path": "./packs/gm-screen","type": "JournalEntry","private": false }
   ],
   "socket": false,
-  "manifest": "#{MANIFEST}#",
-  "download": "#{DOWNLOAD}#",
   "protected": false,
-  "grid": {
-    "distance": 5,
-    "units": "ft"
-  },
+  "grid": { "distance": 5, "units": "ft" },
   "primaryTokenAttribute": "defense.hp",
   "flags": {
     "hotReload": {

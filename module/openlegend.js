@@ -7,13 +7,20 @@ import { olItemSheet } from "./item/item-sheet.js";
 import { preloadHandlebarsTemplates } from "./templates.js";
 import * as macros from "./util/macros.js";
 
-Hooks.once('init', async function() {
+/* ----------------------------- */
+/* Utility: local slugify (v13+) */
+/* ----------------------------- */
+function slugifyLabel(input) {
+  return String(input ?? "")
+    .toLowerCase()
+    .normalize("NFKD")                    // split accented chars
+    .replace(/[\u0300-\u036f]/g, "")      // drop diacritics
+    .replace(/[^a-z0-9]+/g, "-")          // non-alphanumerics -> hyphen
+    .replace(/^-+|-+$/g, "");             // trim hyphens
+}
 
-  game.openlegend = {
-    olActor,
-    olItem,
-    macros: macros
-  };
+Hooks.once("init", async function () {
+  game.openlegend = { olActor, olItem, macros };
 
   // Register settings
   game.settings.register("openlegend", "alt_d20_explosion", {
@@ -22,164 +29,169 @@ Hooks.once('init', async function() {
     scope: "world",
     config: true,
     type: Boolean,
-    choices: {
-      true: "On",
-      false: "Off"
-    },
+    choices: { true: "On", false: "Off" },
     default: false,
-    onChange: value => {
-      console.log(value)
-    }
+    onChange: (value) => console.log(value),
   });
 
-  /**
-   * Set an initiative formula for the system
-   * @type {String}
-   */
-  CONFIG.Combat.initiative = {formula: "1d20X"};
+  // Initiative
+  CONFIG.Combat.initiative = { formula: "1d20X" };
   Combatant.prototype._getInitiativeFormula = _getInitiativeFormula;
 
-  // Define custom Entity classes
+  // Document classes
   CONFIG.Actor.documentClass = olActor;
   CONFIG.Item.documentClass = olItem;
 
-  // Register sheet application classes
+  // Sheets
   Actors.unregisterSheet("core", ActorSheet);
   Actors.registerSheet("openlegend", olActorSheet, { types: ["character"], makeDefault: true });
   Actors.registerSheet("openlegend", olNPCActorSheet, { types: ["npc"], makeDefault: true });
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet("openlegend", olItemSheet, { makeDefault: true });
 
-  // If you need to add Handlebars helpers, here are a few useful examples:
-  Handlebars.registerHelper('concat', function() {
-    let outStr = '';
-    for (let arg in arguments) {
-      if (typeof arguments[arg] != 'object') {
-        outStr += arguments[arg];
-      }
-    }
+  // Handlebars helpers
+  Handlebars.registerHelper("concat", function () {
+    let outStr = "";
+    for (let arg in arguments) if (typeof arguments[arg] !== "object") outStr += arguments[arg];
     return outStr;
   });
+  Handlebars.registerHelper("toLowerCase", (str) => String(str ?? "").toLowerCase());
+  Handlebars.registerHelper("ifeq", (a, b, opts) => (a === b ? opts.fn(this) : opts.inverse(this)));
+  Handlebars.registerHelper("gtz", (v) => v > 0);
 
-  Handlebars.registerHelper('toLowerCase', function(str) {
-    return str.toLowerCase();
-  });
-
-  Handlebars.registerHelper('ifeq', function(arg1, arg2, options) {
-    return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
-  });
-
-  Handlebars.registerHelper('gtz', function (value) {
-    return value > 0;
-  });
-
-  // Preload template partials.
+  // Preload template partials
   preloadHandlebarsTemplates();
-
 });
 
-Hooks.once("ready", async function() {
-
-  // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
+Hooks.once("ready", async function () {
+  // Hotbar macro from drag
   Hooks.on("hotbarDrop", (bar, data, slot) => macros.createOLMacro(data, slot));
 
-  //Set up token status effects from Boons/Banes to replace defaults
-  let statusEffects = [];
-  const packBanes = await game.packs.get("openlegend.banes").getIndex();
-  packBanes.forEach( i => { statusEffects.push ({"id": i.name.slugify(), "name": i.name, "icon": i.img.replace(/blackbackground/g, 'whitetransparent')}) });
-  const packBoons = await game.packs.get("openlegend.boons").getIndex();
-  packBoons.forEach( i => { statusEffects.push ({"id": i.name.slugify(), "name": i.name, "icon": i.img.replace(/blackbackground/g, 'whitetransparent')}) });
-  // add all Banes and Boons in world items to accommodate homebrew
-  game.items.contents.forEach( i => { if( (i.type === "boon") || (i.type === "bane") ){ statusEffects.push ({"id": i.name.slugify(), "name": i.name, "icon": i.img.replace(/blackbackground/g, 'whitetransparent')}) } });
-  // add 'dead' effect
-  statusEffects.push( {id: 'dead', name: 'EFFECT.StatusDead', icon: 'icons/svg/skull.svg'} );
-  // alpha sort effects by name
-  CONFIG.statusEffects = statusEffects.sort(function(a,b){
-    let x = a.name.toLowerCase();
-    let y = b.name.toLowerCase();
-    if(x>y){return 1;}
-    if(x<y){return -1;}
-    return 0;
+  // Build custom status effects (Open Legend boons/banes)
+  await buildOpenLegendStatusEffects();
+
+  // Special mappings (ids must exist in CONFIG.statusEffects)
+  CONFIG.specialStatusEffects = {
+    DEFEATED: "dead",
+    INVISIBLE: "concealment",
+    BLIND: "blinded",
+  };
+
+  // --- Combat lifecycle (no scene linkage assumptions in v13) ---
+  Hooks.on("combatStart", (combat) => {
+    for (const c of combat.combatants) c.actor?.update({ system: { defendUsed: false, majorUnavailable: false } });
   });
 
-  CONFIG.specialStatusEffects = {DEFEATED: 'dead', INVISIBLE: 'concealment', BLIND: 'blinded'};
-
-  Hooks.on("combatStart", (combat, updateData) => {
-    combat.combatants.forEach( c => {
-      let tokenActor = combat.scene.tokens.get( c.tokenId )?.actor;
-      let linkedActor = game.actors.get( c.actorId );
-      let actor = tokenActor?.actorLink ? linkedActor : tokenActor;
-      // reset flags to default for beginning of combat
-      actor.update( { "system": { "defendUsed": false, "majorUnavailable": false } } )
-    } )
+  Hooks.on("preDeleteCombat", (combat) => {
+    for (const c of combat.combatants) c.actor?.update({ system: { defendUsed: false, majorUnavailable: false } });
   });
 
-  Hooks.on("preDeleteCombat", (combat, options, userId) => {
-    combat.combatants.forEach( c => {
-      let tokenActor = combat.scene.tokens.get( c.tokenId )?.actor;
-      let linkedActor = game.actors.get( c.actorId );
-      let actor = tokenActor?.actorLink ? linkedActor : tokenActor;
-      // reset flags to default at end of combat
-      actor.update( { "system": { "defendUsed": false, "majorUnavailable": false } } );
-    } )
+  Hooks.on("deleteCombat", (combat) => {
+    for (const c of combat.combatants) c.actor?.sheet?.render(false);
   });
 
-  Hooks.on("deleteCombat", (combat, options, userId) => {
-    combat.combatants.forEach( c => {
-      let tokenActor = combat.scene.tokens.get( c.tokenId )?.actor;
-      let linkedActor = game.actors.get( c.actorId );
-      let actor = tokenActor?.actorLink ? linkedActor : tokenActor;
-      // ensure that combatant sheets re-render, if open, to ensure controls removed
-      actor.sheet.render(false);
-    } )
-  });
+  Hooks.on("updateCombat", async (combat) => {
+    const curr = combat.combatant?.actor ?? null;
+    if (curr?.system.defendUsed) await curr.update({ "system.defendUsed": false });
 
-  Hooks.on("updateCombat", async (combat, updateData, updateOptions) => {
-    // get actor for current combatant, check for defendUsed, reset to false for start of turn
-    let tokenActor = combat.scene.tokens.get( combat.combatant?.tokenId )?.actor;
-    let linkedActor = game.actors.get( combat.combatant?.actorId );
-    let actor = tokenActor?.actorLink ? linkedActor : tokenActor;
-
-    if( actor?.system.defendUsed ) {
-      await actor.update( { "system.defendUsed": false } )
-    }
-
-    // get actor for previous combatant, check for majorUnavailable, reset to false for end of turn
-    let prevTokenActor = combat.scene.tokens.get( combat.previous?.tokenId )?.actor;
-    let prevLinkedActor = combat.combatants.get( combat.previous?.combatantId )?.actor;
-    let prevActor = prevTokenActor?.actorLink ? prevLinkedActor : prevTokenActor;
-
-    if( prevActor?.system.majorUnavailable ) {
-      await prevActor.update( { "system.majorUnavailable": false } )
-    }
-
-    // set majorUnavailable at end of turn for next turn, if defendUsed was set this turn
-    if ( prevActor?.system.defendUsed ){ await prevActor.update( { "system.majorUnavailable": true } ) }
-
+    const prevId = combat.previous?.combatantId;
+    const prev = prevId ? combat.combatants.get(prevId)?.actor ?? null : null;
+    if (prev?.system.majorUnavailable) await prev.update({ "system.majorUnavailable": false });
+    if (prev?.system.defendUsed) await prev.update({ "system.majorUnavailable": true });
   });
 });
 
-export const _getInitiativeFormula = function() {
+/* -------------------------------------------- */
+/*  Status Effects Builder (v13-safe)           */
+/* -------------------------------------------- */
+async function buildOpenLegendStatusEffects() {
+  const logPrefix = "[Open Legend] StatusEffects:";
+  const effectsMap = new Map();
+
+  // Helper to normalize and add entries, deduped by id
+  const addEffect = (labelOrName, iconOrImg) => {
+    const label = String(labelOrName ?? "").trim();
+    const icon = String(iconOrImg ?? "").trim();
+    if (!label || !icon) return;
+    const id = slugifyLabel(label); // local, v13-safe
+    const img = icon.replace(/blackbackground/g, "whitetransparent");
+    effectsMap.set(id, {
+      id,
+      // Provide BOTH key styles to be robust across HUD expectations
+      label, icon: img,
+      name: label, img,
+    });
+  };
+
+  // 1) System compendia
+  let boonCount = 0, baneCount = 0;
+  const packIds = ["openlegend.banes", "openlegend.boons"];
+  for (const pid of packIds) {
+    try {
+      const pack = game.packs.get(pid);
+      if (!pack) { console.warn(`${logPrefix} Missing compendium ${pid}`); continue; }
+
+      // Try fast index first; if it lacks imgs, fall back to full docs.
+      const index = await pack.getIndex();
+      const hasImgs = index.some(e => !!e.img);
+      if (hasImgs) {
+        index.forEach(e => addEffect(e.name, e.img));
+        if (pid.endsWith(".boons")) boonCount = index.length;
+        if (pid.endsWith(".banes")) baneCount = index.length;
+      } else {
+        const docs = await pack.getDocuments();
+        docs.forEach(d => addEffect(d.name, d.img));
+        if (pid.endsWith(".boons")) boonCount = docs.length;
+        if (pid.endsWith(".banes")) baneCount = docs.length;
+      }
+    } catch (err) {
+      console.warn(`${logPrefix} Failed to read ${pid}:`, err);
+    }
+  }
+
+  // 2) World items (homebrew)
+  let homebrewCount = 0;
+  try {
+    for (const it of game.items.contents) {
+      if (it.type === "boon" || it.type === "bane") {
+        addEffect(it.name, it.img);
+        homebrewCount++;
+      }
+    }
+  } catch (err) {
+    console.warn(`${logPrefix} Failed to scan world items:`, err);
+  }
+
+  // 3) Always include "Dead"
+  addEffect(game.i18n.localize("EFFECT.StatusDead") || "Dead", "icons/svg/skull.svg");
+
+  // 4) Finalize: sort and assign
+  const statusEffects = Array.from(effectsMap.values()).sort((a, b) => {
+    const A = (a.label || a.name || "").toLowerCase();
+    const B = (b.label || b.name || "").toLowerCase();
+    return A.localeCompare(B);
+  });
+  CONFIG.statusEffects = statusEffects;
+
+  console.log(`${logPrefix} Banes: ${baneCount}, Boons: ${boonCount}, Homebrew: ${homebrewCount}, Total: ${statusEffects.length}`);
+}
+
+/* -------------------------------------------- */
+/*  Initiative                                  */
+/* -------------------------------------------- */
+export const _getInitiativeFormula = function () {
   const actor = this.actor;
-  if ( !actor ) return "1d20";
+  if (!actor) return "1d20";
   const agi = actor.system.attributes.physical.agility.dice;
 
   const init_mod = actor.system.initiative_mod;
-  // If this actor doesn't have an init mod, or the init_mod is 0, default d10
-  if ( init_mod === undefined || init_mod === 0) {
-    if (agi.num === 0)
-      return "1d20X";
+  if (init_mod === undefined || init_mod === 0) {
+    if (agi.num === 0) return "1d20X";
     else return `1d20X + ${agi.str}X`;
-  // If it has an init mod, and that mod is not 0, and its agi score is 0
   } else if (agi.num === 0) {
-    if (init_mod < 0)
-      return "2d20kl1X";
-    else
-      return "2d20kh1X";
+    return init_mod < 0 ? "2d20kl1X" : "2d20kh1X";
   }
-  // Generate KH/KL for adv/dis
   const keep_str = init_mod < 0 ? `kl${agi.num}X` : `kh${agi.num}X`;
   const dice_to_roll = Math.abs(init_mod) + agi.num;
-  const formula = `1d20X + ${dice_to_roll}${agi.die}${keep_str}`;
-  return formula;
+  return `1d20X + ${dice_to_roll}${agi.die}${keep_str}`;
 };

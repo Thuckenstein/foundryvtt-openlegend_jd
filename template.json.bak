@@ -1,0 +1,204 @@
+{
+  "Actor": {
+    "types": ["character", "npc"],
+    "templates": {
+      "details": {
+		"description": "",
+		"player": "",
+		"level": 1,
+		"xp": 0,
+		"wl": 2,
+		"lp": 1,
+		"speed": 30,
+		"notes": "",
+		"currency": { "cb": 0, "ss": 0, "gc": 0 },
+		"dread": { "level": 0 }
+},
+      "base": {
+        "trackers": {
+          "attr": {
+            "spent": 0,
+            "points": 40
+          },
+          "feats": {
+            "spent": 0,
+            "points": 6
+          }
+        },
+        "defense": {
+          "hp": {
+            "value": 10,
+            "min": 0,
+            "max": 10,
+            "lethal": 0,
+            "formula": [
+              {"default": "fortitude", "active": "fortitude"},
+              {"default": "will", "active": "will"},
+              {"default": "presence", "active": "presence"}
+            ]
+          },
+          "guard": {
+            "guard": 10,
+            "armor": 0,
+            "other": 0,
+            "formula": [
+              {"default": "agility", "active": "agility"},
+              {"default": "might", "active": "might"}
+            ]
+          },
+          "toughness": {
+            "toughness": 10,
+            "other": 0,
+            "formula": [
+              {"default": "fortitude", "active": "fortitude"},
+              {"default": "will", "active": "will"}
+            ]
+          },
+          "resolve": {
+            "resolve": 10,
+            "other": 0,
+            "formula": [
+              {"default": "presence", "active": "presence"},
+              {"default": "will", "active": "will"}
+            ]
+          }
+        },
+        "attributes": {
+          "physical": {
+            "agility": { "score": 0 },
+            "fortitude": { "score": 0 },
+            "might": { "score": 0 }
+          },
+          "mental": {
+            "learning": { "score": 0 },
+            "logic": { "score": 0 },
+            "perception": { "score": 0 },
+            "will": { "score": 0 }
+          },
+          "social": {
+            "deception": { "score": 0 },
+            "persuasion": { "score": 0 },
+            "presence": { "score": 0 }
+          },
+          "extraordinary": {
+            "alteration": { "score": 0 },
+            "creation": { "score": 0 },
+            "energy": { "score": 0 },
+            "entropy": { "score": 0 },
+            "influence": { "score": 0 },
+            "movement": { "score": 0 },
+            "prescience": { "score": 0 },
+            "protection": { "score": 0 }
+          }
+        },
+        "initiative_mod": 0
+      }
+    },
+    "character": {
+      "templates": ["base", "details"],
+      "biography": ""
+    },
+    "npc": {
+      "templates": ["base", "details"],
+      "boss_edge": 0
+    }
+  },
+  "Item": {
+    "types": ["boon", "bane", "weapon", "armor", "generic", "feat", "perk", "flaw", "attack"],
+    "templates": {
+      "flavor": {
+        "details": {
+          "description": "",
+          "effect": "",
+          "notes": ""
+        }
+      },
+      "core": {
+        "attributes": {
+          "agility": false, "fortitude": false, "might": false,
+          "learning": false, "logic": false, "perception": false, "will": false,
+          "deception": false, "persuasion": false, "presence": false,
+          "alteration": false, "creation": false, "energy": false, "entropy": false,
+          "influence": false, "movement": false, "prescience": false, "protection": false
+        }
+      },
+      "actionable": {
+        "action": {
+          "name": "",
+          "attribute": "",
+          "cast_time": "",
+          "target": "",
+          "default_adv": 0,
+          "explosion_mod": 0,
+          "index": 0,
+          "show_as_action": true
+        }
+      },
+      "persists": {
+        "persists": {
+          "duration": ""
+        }
+      },
+      "gear": {
+        "gear": {
+          "index": 0,
+          "wl": 0
+        },
+      }
+	  "currency": {
+		"cb": 0,
+		"ss": 0,
+		"gc": 0
+		}
+    },
+    "boon": {
+      "templates": ["flavor", "core", "actionable", "persists"]
+    },
+    "bane": {
+      "templates": ["flavor", "core", "actionable", "persists"],
+      "attacks": [],
+      "pl": ""
+    },
+    "weapon": {
+      "templates": ["flavor", "core", "actionable", "gear"],
+      "attacks": [],
+      "categories": "",
+      "properties": "",
+      "banes": ""
+    },
+    "armor": {
+      "templates": ["flavor", "gear"],
+      "type": "",
+      "req_fort": 0,
+      "defense": 0,
+      "speed_penalty": 0,
+      "equipped": true
+    },
+    "generic": {
+      "templates": ["flavor", "core", "actionable", "gear"],
+      "attacks": [],
+      "categories": "",
+      "properties": "",
+      "banes": "",
+      "boons": "",
+      "quantity": 1
+    },
+    "feat" :{
+      "templates": ["flavor"],
+      "cost": 0,
+      "tier": "",
+      "prerequisites": "",
+      "index": 0
+    },
+    "perk": {
+      "templates": ["flavor"]
+    },
+    "flaw": {
+      "templates": ["flavor"]
+    },
+    "attack": {
+      "templates": ["flavor", "core", "actionable"],
+      "attacks": []
+    }
+  }
+}

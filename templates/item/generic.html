@@ -19,6 +19,18 @@
                     <input type="text" name="system.properties" value="{{system.properties}}" placeholder="Properties"/></li>
                 <li class="shrink">WL:
                     <input class="wl" type="text" name="system.gear.wl" value="{{system.gear.wl}}" placeholder="?"/></li>
+					<ul class="summary flexrow cost">
+			  <li class="flexrow">Cost:&nbsp;</li>
+			  <li class="shrink">
+				<input class="wl coin" type="number" name="system.gear.cost.gc" value="{{system.gear.cost.gc}}" min="0" data-dtype="Number"/> gc
+			  </li>
+			  <li class="shrink">
+				<input class="wl coin" type="number" name="system.gear.cost.ss" value="{{system.gear.cost.ss}}" min="0" data-dtype="Number"/> ss
+			  </li>
+			  <li class="shrink">
+				<input class="wl coin" type="number" name="system.gear.cost.cb" value="{{system.gear.cost.cb}}" min="0" data-dtype="Number"/> cb
+			  </li>
+</ul>
             </ul>
         </div>
     </header>

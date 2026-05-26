@@ -29,7 +29,10 @@ export class olItemSheet extends ItemSheet {
     sheetData.owner = itemData.owner;
     sheetData.editable = itemData.editable;
 
-    sheetData.system.details.description = await TextEditor.enrichHTML(sheetData.system.details.description, {secrets: itemData.isOwner});
+    sheetData.system.details.description = await TextEditor.enrichHTML(
+      sheetData.system.details.description,
+      { secrets: itemData.isOwner }
+    );
 
     return sheetData;
   }
@@ -50,50 +53,88 @@ export class olItemSheet extends ItemSheet {
   /** @override */
   activateListeners(html) {
     super.activateListeners(html);
-    html.find(".add-attack").click(async () => {
+
+    // Add a new attack row (keeps using the existing partial)
+    html.find(".add-attack").off("click.ol").on("click.ol", async () => {
       const template = "systems/openlegend/templates/item/parts/attack-target.html";
-      const data = { 'attack': {}, 'attributes': this.object.system.attributes };
+      const data = { attack: {}, attributes: this.object.system.attributes };
       const new_attack = await renderTemplate(template, data);
       html.find(".attack-list").append(new_attack);
     });
 
-    html.find(".attack-delete").click(ev => $(ev.currentTarget).closest('li').remove());
-    html.find(".update-action").click(ev => {
-      const btn = $(ev.currentTarget);
-      if (btn.html() === "Edit")
-        btn.html("Save");
-      else {
-        let data = {}
-        html.find(".attr-checkbox").each((i, obj) => {
-          data['system.attributes.' + obj.dataset.attr] = obj.checked;
+    // Use event delegation so dynamically-added rows have working delete buttons
+    html.off("click.ol", ".attack-delete")
+        .on("click.ol", ".attack-delete", (ev) => {
+          $(ev.currentTarget).closest("li").remove();
         });
 
-        if (this.object.system.attacks) {
-          const attacks = []
-          html.find(".action-attack").each((i, attack) => {
-            const attr = $(attack).find('.attack-attribute').val();
-            const target = $(attack).find('.attack-target').val();
-            attacks.push({ "attribute": attr, "target": target });
-          });
-          data['system.attacks'] = attacks;
+    // Robust Edit/Save toggle that respects the HTML `hidden` attribute (v13-safe)
+    html.find(".update-action").off("click.ol").on("click.ol", async (ev) => {
+      ev.preventDefault();
+      const $btn = $(ev.currentTarget);
+      const $list = html.find(".action-list");
+      const $edit = html.find(".action-edit");
+
+      // Determine if we're currently editing by checking visibility + hidden attribute
+      const editing = $edit.length && $edit.is(":visible") && !$edit.is(":hidden");
+
+      if (!editing) {
+        // Enter edit mode
+        if ($edit.length) {
+          $edit.removeAttr("hidden").show();
         }
-        this.object.update(data);
-        btn.html("Edit");
+        if ($list.length) {
+          $list.hide();
+        }
+        $btn.text("Save");
+        return;
       }
 
-      html.find(".action-list").toggle();
-      html.find(".action-edit").toggle();
+      // Collect and save changes, then exit edit mode
+      const data = {};
+
+      // Attribute checkboxes (e.g., which attributes apply to this item)
+      html.find(".attr-checkbox").each((i, obj) => {
+        data[`system.attributes.${obj.dataset.attr}`] = obj.checked;
+      });
+
+      // Attacks (attribute ↔ target pairs)
+      if (this.object.system.attacks) {
+        const attacks = [];
+        html.find(".action-attack").each((i, attack) => {
+          const $a = $(attack);
+          const attr = $a.find(".attack-attribute").val();
+          const target = $a.find(".attack-target").val();
+          attacks.push({ attribute: attr, target: target });
+        });
+        data["system.attacks"] = attacks;
+      }
+
+      if (Object.keys(data).length) {
+        await this.object.update(data);
+      }
+
+      // Exit edit mode
+      if ($edit.length) {
+        $edit.attr("hidden", true).hide();
+      }
+      if ($list.length) {
+        $list.show();
+      }
+      $btn.text("Edit");
     });
 
-    html.find('.scale').keyup(ev => {
-      const input = $(ev.currentTarget);
-      const tester = html.find('.scale-tester');
-      tester.text(input.val());
-      input.width(tester.width() + 5);
-    });
+    // Scale input autoresize helpers
+    html.off("keyup.ol", ".scale")
+        .on("keyup.ol", ".scale", (ev) => {
+          const input = $(ev.currentTarget);
+          const tester = html.find(".scale-tester");
+          tester.text(input.val());
+          input.width(tester.width() + 5);
+        });
 
-    html.find('.scale').each((i, tag) => {
-      const tester = html.find('.scale-tester');
+    html.find(".scale").each((i, tag) => {
+      const tester = html.find(".scale-tester");
       tester.text($(tag).val());
       $(tag).width(tester.width() + 5);
     });
@@ -106,6 +147,6 @@ export class olItemSheet extends ItemSheet {
 
   resizeInput() {
     console.log($(this));
-    $(this).attr('size', $(this).val().length);
+    $(this).attr("size", $(this).val().length);
   }
 }

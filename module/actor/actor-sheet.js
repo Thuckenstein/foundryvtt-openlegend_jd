@@ -1,5 +1,20 @@
-import { rollAttr, rollItem } from "../util/dice.js";
+import { rollAttr, rollItem, rollDread } from "../util/dice.js";
 import { move_action_up, move_feat_up, move_gear_up } from "./item-movement.js";
+
+function dreadDiceFromLevel(lvl){
+  lvl = Number(lvl ?? 0);
+  if (lvl <= 2)  return { num: 0, faces: 0,  diceStr: "+d0"   };
+  if (lvl <= 4)  return { num: 1, faces: 4,  diceStr: "+1d4"  };
+  if (lvl <= 6)  return { num: 1, faces: 6,  diceStr: "+1d6"  };
+  if (lvl <= 8)  return { num: 1, faces: 8,  diceStr: "+1d8"  };
+  if (lvl <= 10) return { num: 1, faces: 10, diceStr: "+1d10" };
+  if (lvl <= 12) return { num: 2, faces: 6,  diceStr: "+2d6"  };
+  if (lvl <= 14) return { num: 2, faces: 8,  diceStr: "+2d8"  };
+  if (lvl <= 16) return { num: 2, faces: 10, diceStr: "+2d10" };
+  if (lvl <= 18) return { num: 3, faces: 8,  diceStr: "+3d8"  };
+  if (lvl === 19) return { num: 3, faces: 10, diceStr: "+3d10" };
+  return               { num: 4, faces: 8,  diceStr: "+4d8"  }; // 20
+}
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -27,40 +42,42 @@ export class olActorSheet extends ActorSheet {
   /* -------------------------------------------- */
 
   /** @override */
-  async getData(options) {
-    const actorData = super.getData();
-    const sheetData = actorData.data;
-    sheetData.owner = actorData.owner;
-    sheetData.editable = actorData.editable;
-    // console.log(actorData);
+async getData(options) {
+  const actorData = super.getData();
+  const sheetData = actorData.data;
+  sheetData.owner = actorData.owner;
+  sheetData.editable = actorData.editable;
 
-    if (sheetData.actions === undefined) {
-      sheetData.actions = [];
-      sheetData.gear    = [];
-      sheetData.feats   = [];
-      sheetData.perks   = [];
-      sheetData.flaws   = [];
-    }
-    actorData.items.forEach(item => {
-      if (item.system.action)
-        sheetData.actions.push(item);
-      if (item.system.gear)
-        sheetData.gear.push(item);
-      if (item.type === 'feat')
-        sheetData.feats.push(item);
-      else if (item.type === 'perk')
-        sheetData.perks.push(item);
-      else if (item.type === 'flaw')
-        sheetData.flaws.push(item);
-    });
-    sheetData.actions.sort((a, b) => a.system.action.index - b.system.action.index);
-    sheetData.gear.sort((a, b) => a.system.gear.index - b.system.gear.index);
-    sheetData.feats.sort((a, b) => a.system.index - b.system.index);
-    sheetData.inCombat = this.actor.inCombat;
-    sheetData.system.notes = await TextEditor.enrichHTML(sheetData.system.notes, {secrets: actorData.isOwner});
-
-    return sheetData;
+  if (sheetData.actions === undefined) {
+    sheetData.actions = [];
+    sheetData.gear    = [];
+    sheetData.feats   = [];
+    sheetData.perks   = [];
+    sheetData.flaws   = [];
   }
+
+  actorData.items.forEach(item => {
+    if (item.system.action) sheetData.actions.push(item);
+    if (item.system.gear)   sheetData.gear.push(item);
+    if (item.type === 'feat') sheetData.feats.push(item);
+    else if (item.type === 'perk') sheetData.perks.push(item);
+    else if (item.type === 'flaw') sheetData.flaws.push(item);
+  });
+
+  sheetData.actions.sort((a, b) => a.system.action.index - b.system.action.index);
+  sheetData.gear.sort((a, b) => a.system.gear.index - b.system.gear.index);
+  sheetData.feats.sort((a, b) => a.system.index - b.system.index);
+
+  sheetData.inCombat = this.actor.inCombat;
+  sheetData.system.notes = await TextEditor.enrichHTML(sheetData.system.notes, { secrets: actorData.isOwner });
+
+  // Dread dice for the template label
+  const { diceStr } = dreadDiceFromLevel(sheetData.system?.dread?.level);
+  sheetData.dread = { diceStr };
+
+  return sheetData;
+}
+
 
   /** @override */
   async _onDropItemCreate(itemData) {
@@ -131,7 +148,12 @@ export class olActorSheet extends ActorSheet {
       options.width = 550;
       options.resizable = true;
       options.title = "HeroMuster " + type.charAt(0).toUpperCase() + type.substr(1).toLowerCase();
-      new FrameViewer(heroURL + type + "-" + code, options).render(true);
+      // Prefer FrameViewer if present; otherwise open in a new window
+      if (typeof FrameViewer !== "undefined") {
+        new FrameViewer(heroURL + type + "-" + code, options).render(true);
+      } else {
+        window.open(heroURL + type + "-" + code, "_blank", "noopener");
+      }
     });
 
     // Update action 'items' directly
@@ -185,13 +207,45 @@ export class olActorSheet extends ActorSheet {
 
     // Rollable abilities.
     html.find('.rollable').click(this._onRoll.bind(this));
-    html.find('.init-rollable').click(ev => {
-      this.actor.rollInitiative({createCombatants: true});
-    });
 
-    // Configurable settings.
+    // v13-compatible initiative roll (replaces deprecated Actor.rollInitiative)
+    html.find('.init-rollable').click(async ev => {
+      const scene = game.scenes.current;
+      const token = this.actor.getActiveTokens(true, true)[0] ?? null;
+
+      let combat = game.combat;
+      if (!combat || combat.scene?.id !== scene?.id) {
+        combat = await Combat.create({ scene: scene?.id, active: true });
+      }
+
+      let combatant = combat.combatants.find(c => c.actorId === this.actor.id);
+      if (!combatant) {
+        const created = await combat.createEmbeddedDocuments("Combatant", [{
+          actorId: this.actor.id,
+          tokenId: token?.id
+        }]);
+        combatant = created[0];
+      }
+
+      await combat.rollInitiative([combatant.id]);
+    });
+	
+	// Dread roll (d20 + Dread Dice)
+	html.find('.dread-rollable').on('click', ev => {
+  ev.preventDefault();
+  ev.stopPropagation();
+  rollDread(this.actor);
+});
+    
+	// Configurable settings.
     html.find('.settings').click(this._onConfigure.bind(this));
     html.find('.attr-settings').click(this._onAttrConfigure.bind(this));
+	
+	html.find('input[name="system.dread.level"]').on('input', ev => {
+	const { diceStr } = dreadDiceFromLevel(ev.currentTarget.value);
+	html.find('.dread-dice').text(`[Dread Dice: ${diceStr}]`);
+	});
+
   }
 
   /* -------------------------------------------- */
@@ -277,26 +331,57 @@ export class olActorSheet extends ActorSheet {
     }
   }
 
+  // v13-safe dialog prefill: only fill inputs with existing bonuses; leave blank otherwise.
   async _AttrSettingsDialog() {
     const template = "systems/openlegend/templates/dialog/attr-settings.html";
     const attrs = this.actor.system.attributes;
     const data = { 'attributes': attrs }
 
     const html = await renderTemplate(template, data);
+
+    const prefill = (app, jQ) => {
+      try {
+        // Only fill inputs that are currently empty; do not force-score into bonus fields.
+        jQ.find("input[data-group][data-attr]").each((i, el) => {
+          const g = el.dataset.group;
+          const a = el.dataset.attr;
+          const curBonus = attrs?.[g]?.[a]?.bonus;
+
+          // If a bonus is defined (including 0), show it; otherwise leave blank to match v12 feel.
+          if ((el.value === "" || el.value === undefined) && curBonus !== undefined) {
+            el.value = curBonus;
+          }
+        });
+
+        // Optional: prefill selects if your template uses them (safe no-op if absent)
+        jQ.find("select[data-group][data-attr]").each((i, el) => {
+          const g = el.dataset.group;
+          const a = el.dataset.attr;
+          const cur = attrs?.[g]?.[a]?.substitute ?? "";
+          if ((el.value === "" || el.value === undefined) && cur !== "") {
+            el.value = cur;
+          }
+        });
+      } finally {
+        Hooks.off("renderDialog", prefill); // run once for this dialog
+      }
+    };
+    Hooks.on("renderDialog", prefill);
+
     // Create the Dialog window
     return new Promise(resolve => {
-        new Dialog({
-            title: data.name,
-            content: html,
-            buttons: {
-                update: {
-                    label: "Update",
-                    callback: html => resolve(html[0].querySelectorAll("input"))
-                }
-            },
-            default: "update",
-            close: html => resolve(null)
-        }).render(true);
+      new Dialog({
+        title: data.name, // unchanged; template didn’t use it before either
+        content: html,
+        buttons: {
+          update: {
+            label: "Update",
+            callback: html => resolve(html[0].querySelectorAll("input"))
+          }
+        },
+        default: "update",
+        close: html => resolve(null)
+      }).render(true);
     });
   }
 

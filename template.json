@@ -10,18 +10,14 @@
         "wl": 2,
         "lp": 1,
         "speed": 30,
-        "notes": ""
+        "notes": "",
+        "currency": { "cb": 0, "ss": 0, "gc": 0 },
+        "dread": { "level": 0 }
       },
       "base": {
         "trackers": {
-          "attr": {
-            "spent": 0,
-            "points": 40
-          },
-          "feats": {
-            "spent": 0,
-            "points": 6
-          }
+          "attr": { "spent": 0, "points": 40 },
+          "feats": { "spent": 0, "points": 6 }
         },
         "defense": {
           "hp": {
@@ -30,9 +26,9 @@
             "max": 10,
             "lethal": 0,
             "formula": [
-              {"default": "fortitude", "active": "fortitude"},
-              {"default": "will", "active": "will"},
-              {"default": "presence", "active": "presence"}
+              { "default": "fortitude", "active": "fortitude" },
+              { "default": "will", "active": "will" },
+              { "default": "presence", "active": "presence" }
             ]
           },
           "guard": {
@@ -40,24 +36,24 @@
             "armor": 0,
             "other": 0,
             "formula": [
-              {"default": "agility", "active": "agility"},
-              {"default": "might", "active": "might"}
+              { "default": "agility", "active": "agility" },
+              { "default": "might", "active": "might" }
             ]
           },
           "toughness": {
             "toughness": 10,
             "other": 0,
             "formula": [
-              {"default": "fortitude", "active": "fortitude"},
-              {"default": "will", "active": "will"}
+              { "default": "fortitude", "active": "fortitude" },
+              { "default": "will", "active": "will" }
             ]
           },
           "resolve": {
             "resolve": 10,
             "other": 0,
             "formula": [
-              {"default": "presence", "active": "presence"},
-              {"default": "will", "active": "will"}
+              { "default": "presence", "active": "presence" },
+              { "default": "will", "active": "will" }
             ]
           }
         },
@@ -92,25 +88,13 @@
         "initiative_mod": 0
       }
     },
-    "character": {
-      "templates": ["base", "details"],
-      "biography": ""
-    },
-    "npc": {
-      "templates": ["base", "details"],
-      "boss_edge": 0
-    }
+    "character": { "templates": ["base", "details"], "biography": "" },
+    "npc": { "templates": ["base", "details"], "boss_edge": 0 }
   },
   "Item": {
     "types": ["boon", "bane", "weapon", "armor", "generic", "feat", "perk", "flaw", "attack"],
     "templates": {
-      "flavor": {
-        "details": {
-          "description": "",
-          "effect": "",
-          "notes": ""
-        }
-      },
+      "flavor": { "details": { "description": "", "effect": "", "notes": "" } },
       "core": {
         "attributes": {
           "agility": false, "fortitude": false, "might": false,
@@ -132,66 +116,18 @@
           "show_as_action": true
         }
       },
-      "persists": {
-        "persists": {
-          "duration": ""
-        }
-      },
-      "gear": {
-        "gear": {
-          "index": 0,
-          "wl": 0
-        }
-      }
+      "persists": { "persists": { "duration": "" } },
+      "gear": { "gear": { "index": 0, "wl": 0, "cost": { "gc": 0, "ss": 0, "cb": 0 } } }
+
     },
-    "boon": {
-      "templates": ["flavor", "core", "actionable", "persists"]
-    },
-    "bane": {
-      "templates": ["flavor", "core", "actionable", "persists"],
-      "attacks": [],
-      "pl": ""
-    },
-    "weapon": {
-      "templates": ["flavor", "core", "actionable", "gear"],
-      "attacks": [],
-      "categories": "",
-      "properties": "",
-      "banes": ""
-    },
-    "armor": {
-      "templates": ["flavor", "gear"],
-      "type": "",
-      "req_fort": 0,
-      "defense": 0,
-      "speed_penalty": 0,
-      "equipped": true
-    },
-    "generic": {
-      "templates": ["flavor", "core", "actionable", "gear"],
-      "attacks": [],
-      "categories": "",
-      "properties": "",
-      "banes": "",
-      "boons": "",
-      "quantity": 1
-    },
-    "feat" :{
-      "templates": ["flavor"],
-      "cost": 0,
-      "tier": "",
-      "prerequisites": "",
-      "index": 0
-    },
-    "perk": {
-      "templates": ["flavor"]
-    },
-    "flaw": {
-      "templates": ["flavor"]
-    },
-    "attack": {
-      "templates": ["flavor", "core", "actionable"],
-      "attacks": []
-    }
+    "boon":   { "templates": ["flavor", "core", "actionable", "persists"] },
+    "bane":   { "templates": ["flavor", "core", "actionable", "persists"], "attacks": [], "pl": "" },
+    "weapon": { "templates": ["flavor", "core", "actionable", "gear"], "attacks": [], "categories": "", "properties": "", "banes": "" },
+    "armor":  { "templates": ["flavor", "gear"], "type": "", "req_fort": 0, "defense": 0, "speed_penalty": 0, "equipped": true },
+    "generic":{ "templates": ["flavor", "core", "actionable", "gear"], "attacks": [], "categories": "", "properties": "", "banes": "", "boons": "", "quantity": 1 },
+    "feat":   { "templates": ["flavor"], "cost": 0, "tier": "", "prerequisites": "", "index": 0 },
+    "perk":   { "templates": ["flavor"] },
+    "flaw":   { "templates": ["flavor"] },
+    "attack": { "templates": ["flavor", "core", "actionable"], "attacks": [] }
   }
 }

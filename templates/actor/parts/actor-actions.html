@@ -34,12 +34,17 @@
             {{> "systems/openlegend/templates/actor/parts/action-attack.html" item=item}}
         {{/ifeq}}
         {{#if item.system.action.show_as_action}}
-            {{#ifeq item.type 'weapon'}}
-                {{> "systems/openlegend/templates/actor/parts/action-attack.html" item=item}}
-            {{/ifeq}}
-            {{#ifeq item.type 'generic'}}
-                {{> "systems/openlegend/templates/actor/parts/action-attack.html" item=item}}
-            {{/ifeq}}
+    {{#ifeq item.type 'weapon'}}
+        {{#if (gtz item.system.attacks.length)}}
+            {{> "systems/openlegend/templates/actor/parts/action-attack.html" item=item}}
         {{/if}}
+    {{/ifeq}}
+    {{#ifeq item.type 'generic'}}
+        {{#if (gtz item.system.attacks.length)}}
+            {{> "systems/openlegend/templates/actor/parts/action-attack.html" item=item}}
+        {{/if}}
+    {{/ifeq}}
+{{/if}}
+
     {{/each}}
 </div>

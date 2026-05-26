@@ -20,16 +20,18 @@
         <label>XP:</label>
         <input name="system.xp" type="number" value="{{system.xp}}" placeholder="0" />
     </div>
+    {{!-- Temporarily hidden: Dread dice UI
     <div class="details-dread text-input">
-  <label class="forceful">
-    <a class="dread-rollable" title="Roll Dread Check"><i class="fas fa-dice-d20"></i></a>
-    Dread Level:
-  </label>
-<input name="system.dread.level" type="number" data-dtype="Number"
-       value="{{#if system.dread.level}}{{system.dread.level}}{{else}}0{{/if}}"
-       min="0" max="20"/>
-  <label class="dread-dice">[Dread Dice: {{dread.diceStr}}]</label>
-</div>
+        <label class="forceful">
+            <a class="dread-rollable" title="Roll Dread Check"><i class="fas fa-dice-d20"></i></a>
+            Dread Level:
+        </label>
+        <input name="system.dread.level" type="number" data-dtype="Number"
+               value="{{#if system.dread.level}}{{system.dread.level}}{{else}}0{{/if}}"
+               min="0" max="20"/>
+        <label class="dread-dice">[Dread Dice: {{dread.diceStr}}]</label>
+    </div>
+    --}}
     <div class="details-roll-initiative text-input">
         <label class="forceful">
             <a class="init-rollable" title="Roll">

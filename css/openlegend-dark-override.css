@@ -1,308 +1,400 @@
-/* Open Legend — Dark Override v2
-   Drop this file after openlegend.css in system.json "styles".
-   It only adjusts colors/borders; no spacing or grid rules are touched.
+/* Open Legend - Rich Dark Override
+   Loaded after openlegend.css. Keep this file focused on color, borders, and
+   surface treatment so the existing sheet layout remains stable.
 */
 
-/* ---- palette ---- */
-.openlegend.sheet{
-  --ol-border: #1a1d21;   /* very dark slate gray */
-  --ol-text:   #e6e6e6;   /* main text */
-  --ol-muted:  #b0b6bf;   /* secondary text */
-  --ol-head:   #a6424a;   /* burgundy (header text) */
-
-  --ol-actions:   #1f252b; /* dark steel gray */
-  --ol-attrgear:  #2a0f14; /* dark burgundy */
-  --ol-feats:     #1a1a1a; /* dark gray */
-  --ol-perks:     #0f2a17; /* dark forest green */
-  --ol-flaws:     #2a0d0d; /* dark red */
-
-  --ol-heromuster:#28323e; /* darker slate blue */
-  --ol-currency:  #d9edf7; /* unchanged per request */
+/* ---------- Palette ---------- */
+.openlegend,
+.openlegend.sheet,
+.dialog .openlegend {
+  --ol-bg: #0d1117;
+  --ol-surface: #101827;
+  --ol-surface-2: #141d2e;
+  --ol-surface-3: #1b2638;
+  --ol-surface-hover: #26344a;
+  --ol-burgundy: #25101a;
+  --ol-burgundy-2: #311421;
+  --ol-blood: #351014;
+  --ol-blood-2: #451419;
+  --ol-storm: #132034;
+  --ol-storm-2: #1a2b43;
+  --ol-frame-title: #18091f;
+  --ol-divider: rgba(83, 50, 101, 0.58);
+  --ol-divider-soft: rgba(58, 36, 75, 0.58);
+  --ol-border: rgba(83, 50, 101, 0.46);
+  --ol-border-strong: rgba(101, 62, 122, 0.56);
+  --ol-text: #ece7dc;
+  --ol-muted: #b8c0c4;
+  --ol-soft: #8f9aa0;
+  --ol-accent: #b07668;
+  --ol-name-gear: #c38670;
+  --ol-name-feat: #92a8c5;
+  --ol-warm: #d7a961;
+  --ol-danger: #d97373;
+  --ol-good: #8abf8f;
+  --ol-glow: rgba(176, 118, 104, 0.36);
+  color: var(--ol-text);
 }
 
-/* ---- text colors (keep existing hover glow red) ---- */
-.openlegend.sheet, .openlegend.sheet input, .openlegend.sheet .attribute-value { color: var(--ol-text); }
-.openlegend.sheet .gear-row .gear-summary .gear-type{ color: var(--ol-muted); }
-
-/* ---- unify borders + round corners on frames ---- */
-.openlegend.sheet .details,
-.openlegend.sheet .details div,
-.openlegend.sheet .health,
-.openlegend.sheet .defense-grid,
-.openlegend.sheet .actions,
-.openlegend.sheet .pc-notes,
-.openlegend.sheet .character .gear,
-.openlegend.sheet .character .feats,
-.openlegend.sheet .character .perks,
-.openlegend.sheet .character .flaws,
-.openlegend.sheet .gear-row,
-.openlegend.sheet .feat-row,
-.openlegend.sheet .perkflaw-row,
-.openlegend.sheet .currency-frame,
-.openlegend.sheet .heromuster,
-.openlegend.sheet .npc .npc-body,
-.openlegend.sheet .npc .npc-notes,
-.openlegend.sheet .item-sheet .header,
-.openlegend.sheet .item-sheet .sheet-body .description-editor{
-  border: 1px solid var(--ol-border) !important;
-  border-radius: 8px;
+/* ---------- Global Sheet Surface ---------- */
+.window-app .openlegend,
+.openlegend.sheet,
+.dialog .openlegend {
+  background: var(--ol-bg) !important;
+  color: var(--ol-text) !important;
 }
 
-/* ---- retint specific sections ---- */
-.openlegend.sheet .actions{ background: var(--ol-actions) !important; }
-.openlegend.sheet .attributes{ background-color: var(--ol-attrgear) !important; }
-.openlegend.sheet .character .gear{ background-color: var(--ol-attrgear) !important; }
-.openlegend.sheet .character .feats{ background-color: var(--ol-feats) !important; }
-.openlegend.sheet .character .perks{ background: var(--ol-perks) !important; }
-.openlegend.sheet .character .flaws{ background: var(--ol-flaws) !important; }
-
-/* Currency panel unchanged */
-.openlegend.sheet .currency-frame{ background: var(--ol-currency) !important; }
-
-/* HeroMuster darker (panel + its buttons) */
-.openlegend.sheet .heromuster{ background: var(--ol-heromuster) !important; }
-.openlegend.sheet .heromuster button{
-  background: var(--ol-heromuster) !important;
-  border: 1px solid var(--ol-border) !important;
+.window-app.openlegend .window-content,
+.window-app.sheet.openlegend .window-content,
+.app.window-app.openlegend .window-content,
+.application.openlegend,
+.application.openlegend .window-content,
+.application.sheet.openlegend .window-content,
+.window-content:has(.openlegend),
+.window-app:has(.openlegend) .window-content,
+.app.window-app:has(.openlegend) .window-content {
+  background: #0d1117 !important;
 }
 
-/* ---- headers: burgundy text, subtle top rule ---- */
-.openlegend.sheet .health-title,
-.openlegend.sheet .defense-title,
-.openlegend.sheet .attribute-header,
-.openlegend.sheet .character .gear .title,
-.openlegend.sheet .character .feats .title,
-.openlegend.sheet .character .perks .title,
-.openlegend.sheet .character .flaws .title,
-.openlegend.sheet .pc-notes .notes-title,
-.openlegend.sheet .actions .action-title{
-  color: var(--ol-head) !important;
-  border-top: 1px solid var(--ol-border) !important;
+.openlegend .main-grid {
   background: transparent !important;
 }
 
-/* Defense block big number stays bright */
-.openlegend.sheet .defense-value{ color: #ffffff !important; }
-
-/* Debug watermark so you can confirm this file is active. Remove when happy. */
-.openlegend.sheet::after{
-  content: "OL Dark v2";
-  position: fixed; right: 6px; bottom: 4px;
-  font-size: 10px; color: #555; pointer-events: none;
-}
-/* === Currency frame: dark steel gray === */
-.openlegend.sheet .currency-frame {
-  background: #1f252b !important;  /* dark steel gray */
+.openlegend a,
+.openlegend .clickable,
+.openlegend .rollable,
+.openlegend .init-rollable {
+  color: var(--ol-accent);
 }
 
-/* === Whole sheet background: very dark slate gray === */
-.openlegend.sheet {
-  background: #12161b !important;  /* dark, near-black slate */
+.openlegend .clickable:hover,
+.openlegend .rollable:hover,
+.openlegend .init-rollable:hover {
+  color: #f7fffb;
+  text-shadow: 0 0 10px var(--ol-glow);
 }
 
-/* 0) Make sure OUR overrides win everywhere */
-.openlegend.sheet, .openlegend { all: revert-layer; } /* no-op if not using cascade layers */
-
-/* 1) Force only the Open Legend sheet background to dark */
-.window-app .openlegend {
-  background: #12161b !important; /* near-black slate */
+/* ---------- Panel Treatment ---------- */
+.openlegend .details,
+.openlegend .health,
+.openlegend .defense-grid,
+.openlegend .actions,
+.openlegend .pc-notes,
+.openlegend .character .gear,
+.openlegend .character .feats,
+.openlegend .character .perks,
+.openlegend .character .flaws,
+.openlegend .currency-frame,
+.openlegend .heromuster,
+.openlegend .npc .npc-body,
+.openlegend .npc .npc-notes,
+.openlegend .npc .npc-actions,
+.openlegend .npc .npc-feats,
+.openlegend .item-sheet .header,
+.openlegend .item-sheet .sheet-body .description-editor {
+  background: var(--ol-surface-2) !important;
+  border: 1px solid var(--ol-border) !important;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  color: var(--ol-text);
 }
 
-/* (If that still looks tan, also force the window-content behind it) */
-.app.window-app .window-content {
-  background: #12161b !important;
+.openlegend .details div,
+.openlegend .gear-row,
+.openlegend .feat-row,
+.openlegend .perkflaw-row {
+  background: var(--ol-surface-3) !important;
+  border: 1px solid var(--ol-divider-soft) !important;
+  border-radius: 6px;
+  color: var(--ol-text);
 }
 
-/* 2) Make 'Score' & 'Dice' readable in Attributes */
-.openlegend .attributes .centered,
-.openlegend .attributes .attribute-value {
-  color: #e6e6e6 !important;
+/* Section identity: low-saturation accents instead of bright blocks. */
+.openlegend .details {
+  background: linear-gradient(180deg, var(--ol-storm), #0f1725) !important;
 }
 
-/* 3) Desaturate Perks & Flaws (less green/red) */
+.openlegend .health {
+  background: linear-gradient(180deg, var(--ol-blood-2), var(--ol-blood)) !important;
+}
+
+.openlegend .defense-grid {
+  background: linear-gradient(180deg, #221526, var(--ol-burgundy)) !important;
+}
+
+.openlegend .actions {
+  background: linear-gradient(180deg, var(--ol-storm-2), var(--ol-storm)) !important;
+}
+
+.openlegend .character .gear {
+  background: linear-gradient(180deg, #211828, var(--ol-burgundy)) !important;
+}
+
+.openlegend .character .feats {
+  background: linear-gradient(180deg, var(--ol-storm-2), #111b2b) !important;
+}
+
 .openlegend .character .perks {
-  background: rgba(30, 42, 34, 0.35) !important;  /* gray-green */
-  background-color: rgba(30, 42, 34, 0.35) !important;
+  background: linear-gradient(180deg, #172538, #111c2b) !important;
 }
+
 .openlegend .character .flaws {
-  background: rgba(42, 26, 26, 0.35) !important;  /* gray-red */
-  background-color: rgba(42, 26, 26, 0.35) !important;
-}
-/* ---------- 1) Item sheet “Properties / WL” row height (stop overlap) ---------- */
-.openlegend .item-sheet .summary { 
-  height: 32px !important;                 /* was 40px */
-}
-.openlegend .item-sheet .summary li {
-  height: 28px !important;                 /* tighten the row */
-  line-height: 26px !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-.openlegend .item-sheet .summary li input {
-  margin: 2px 4px !important;              /* was 5px; prevents pushing below */
-  height: 22px !important;
+  background: linear-gradient(180deg, var(--ol-blood), #240c11) !important;
 }
 
-/* ---------- 2) Gear list: make Armor names white like the others ---------- */
-.openlegend .armor-name,
-.openlegend .armor-name.equipped {
-  color: #ffffff !important;
+.openlegend .currency-frame,
+.openlegend .heromuster {
+  background: linear-gradient(180deg, #182237, #101827) !important;
 }
 
-/* ---------- 3) Gear list: lighten the “type” text to read on dark BG ---------- */
-.openlegend .gear-row .gear-summary .gear-type {
-  color: #cfd6de !important;               /* lighter gray-blue */
-}
-.openlegend .gear-row .gear-summary .gear-title {
-  color: #b0b6bf !important;               /* slightly lighter than original */
-}
-/* Item sheet Cost row: compact, no overlap */
-.openlegend .item-sheet .summary.cost { 
-  height: 28px !important;
-}
-.openlegend .item-sheet .summary.cost li {
-  height: 26px !important;
-  line-height: 24px !important;
-  padding-top: 0 !important; padding-bottom: 0 !important;
-}
-.openlegend .item-sheet .summary.cost .coin {
-  width: 40px !important;
-  margin: 2px 4px !important;
-}
-/* Item header: give room for the new Cost row so nothing clips */
-.openlegend .item-sheet .header {
-  flex: 0 0 132px !important; /* was 100px */
-  min-height: 132px !important;
-  height: auto !important;
+/* ---------- Attributes Panel ---------- */
+.openlegend .attributes {
+  background: linear-gradient(180deg, #16253a, #101827) !important;
+  border: 1px solid var(--ol-border-strong) !important;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color: var(--ol-text);
+  overflow: hidden;
 }
 
-/* Cost row: compact + keep coin labels from cutting off */
-.openlegend .item-sheet .summary.cost {
-  height: 26px !important;
-  font-size: 12px !important;
-}
-.openlegend .item-sheet .summary.cost li {
-  float: left;
-  height: 24px !important;
-  line-height: 22px !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  white-space: nowrap;
-}
-/* "Cost:" label */
-.openlegend .item-sheet .summary.cost li:first-child {
-  width: 44px !important;
-  text-align: left;
-}
-/* Each coin chunk (gc/ss/cb) */
-.openlegend .item-sheet .summary.cost li.shrink {
-  width: 92px !important;   /* room for number + " gc/ss/cb" */
-}
-.openlegend .item-sheet .summary.cost .coin {
-  width: 48px !important;
-  margin: 1px 4px !important;
-  height: 20px !important;
+.openlegend .attr-settings,
+.openlegend .settings {
+  color: var(--ol-soft) !important;
+  opacity: 0.82;
 }
 
-/* 1) Item sheet summary rows (WL/Properties/Cost labels) — readable gray */
+.openlegend .attr-settings:hover,
+.openlegend .settings:hover {
+  color: var(--ol-accent) !important;
+  opacity: 1;
+}
+
+.openlegend .attributes .attribute-header {
+  background: var(--ol-frame-title) !important;
+  border-top: 1px solid var(--ol-divider) !important;
+  border-bottom: 1px solid var(--ol-divider-soft);
+  color: var(--ol-warm) !important;
+  letter-spacing: 0;
+}
+
+.openlegend .attributes .attribute-name {
+  color: var(--ol-text) !important;
+  padding-right: 8px;
+}
+
+.openlegend .attributes .attribute-value,
+.openlegend .attributes .centered {
+  color: var(--ol-muted) !important;
+}
+
+.openlegend .attributes input.centered {
+  width: calc(100% - 10px);
+  height: 22px;
+  margin: 2px 5px;
+  background: rgba(16, 19, 21, 0.45) !important;
+  border: 1px solid rgba(176, 118, 104, 0.28) !important;
+  border-radius: 6px;
+  color: var(--ol-text) !important;
+}
+
+.openlegend .attributes input.centered:focus {
+  border-color: rgba(215, 169, 97, 0.58) !important;
+  box-shadow: 0 0 0 2px rgba(215, 169, 97, 0.12);
+}
+
+/* ---------- Headers / Titles ---------- */
+.openlegend .attribute-header,
+.openlegend .health-title,
+.openlegend .defense-title,
+.openlegend .actions .action-title,
+.openlegend .pc-notes .notes-title,
+.openlegend .character .gear .title,
+.openlegend .character .feats .title,
+.openlegend .character .perks .title,
+.openlegend .character .flaws .title,
+.openlegend .npc .npc-notes .title,
+.openlegend .npc .npc-feats .title {
+  background: var(--ol-frame-title) !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid var(--ol-divider-soft) !important;
+  color: var(--ol-warm) !important;
+}
+
+.openlegend .h-divider,
+.openlegend .underlined,
+.openlegend .currency-sep,
+.openlegend .item-sheet .summary,
+.openlegend .item-sheet .weapon-summary,
 .openlegend .item-sheet .summary li,
-.openlegend .item-sheet .weapon-summary li {
-  color: #cfd6de !important; /* same tone as gear-type on main sheet */
+.openlegend .item-sheet .weapon-summary li,
+.openlegend .feat-row .feat-tier {
+  border-color: var(--ol-divider-soft) !important;
 }
 
-/* 2) Buttons on item sheets (Edit / Add / Save) — make text readable */
-.openlegend .item-sheet button,
-.openlegend .item-sheet .sheet-body button {
-  color: #cfd6de !important;
+.openlegend .defense-value,
+.openlegend .health-type,
+.openlegend .armor-name.equipped {
+  color: #fff7e8 !important;
 }
 
-/* (Optional) If any individual button still looks dark, this forces a subtle outline.
-   Comment out if you don't want borders. */
-.openlegend .item-sheet button {
-  border-color: rgba(207,214,222,0.35) !important;
-}
-/* Item sheet type label (far right, italics) — brighten */
+.openlegend .attribute-value,
+.openlegend .gear-row .gear-summary .gear-type,
+.openlegend .gear-row .gear-summary .gear-title,
+.openlegend .feat-row .feat-tier,
 .openlegend .item-sheet .header .item-subtitle,
 .openlegend .item-sheet .header .item-subtitle .item-type {
-  color: #cfd6de !important;
+  color: var(--ol-muted) !important;
 }
-/* Actor/NPC sheet: make all UI buttons light gray (incl. attribute/defense areas) */
+
+.openlegend .gear-name,
+.openlegend .armor-name {
+  color: var(--ol-name-gear) !important;
+}
+
+.openlegend .character .feats .gear-name,
+.openlegend .npc .npc-feats .gear-name {
+  color: var(--ol-name-feat) !important;
+}
+
+.openlegend .upgraded,
+.dialog .openlegend .upgraded {
+  color: var(--ol-good) !important;
+}
+
+.openlegend .downgraded,
+.openlegend .action-warning {
+  color: var(--ol-danger) !important;
+}
+
+/* ---------- Inputs, Selects, Buttons ---------- */
+.openlegend input,
+.openlegend select,
+.openlegend textarea,
+.openlegend .item-sheet input,
+.openlegend .npc input,
+.dialog .openlegend input[type="text"],
+.dialog .openlegend input[type="number"],
+.dialog .openlegend select {
+  background: rgba(16, 19, 21, 0.32) !important;
+  border: 1px solid rgba(131, 84, 103, 0.32) !important;
+  border-radius: 5px;
+  color: var(--ol-text) !important;
+}
+
+.openlegend input:hover,
+.openlegend input:focus,
+.openlegend select:hover,
+.openlegend select:focus,
+.dialog .openlegend input:focus,
+.dialog .openlegend select:focus {
+  border-color: rgba(215, 169, 97, 0.48) !important;
+  box-shadow: 0 0 0 2px rgba(176, 118, 104, 0.12);
+}
+
+.openlegend ::placeholder,
+.dialog .openlegend ::placeholder {
+  color: var(--ol-soft) !important;
+  opacity: 1;
+}
+
 .openlegend .button,
 .openlegend button,
 .openlegend .heromuster button,
 .openlegend .npc .npc-body button,
-.openlegend .npc .npc-attributes button {
-  color: #cfd6de !important;
-  border-color: rgba(207,214,222,0.35) !important;
-}
-
-/* Also lighten any icon inside those “button” spans */
-.openlegend .button i { color: #cfd6de !important; }
-/* Item sheets: edit-mode pickers (attribute/defense selects) */
-.openlegend .item-sheet .action-edit select,
-.openlegend .item-sheet .attack-list select,
-.openlegend .item-sheet select.attack-attribute,
-.openlegend .item-sheet select.attack-target {
-  color: #cfd6de !important;
-  background: #1f252b !important;
-  border: 1px solid rgba(207,214,222,0.35) !important;
-}
-
-/* Dropdown menu options (Chromium/Electron = works) */
-.openlegend .item-sheet .action-edit select option {
-  color: #cfd6de !important;
-  background: #1f252b !important;
-}
-
-/* Tweak related inputs in the edit block so nothing stays black */
-.openlegend .item-sheet .explosion-mod input,
-.openlegend .item-sheet .action-edit input {
-  color: #cfd6de !important;
-}
-/* ==== Configure Roll dialog (dark + readable) ==== */
-/* Scope to THIS dialog (its content is your roll-dialog.html form with class .openlegend) */
-.dialog .openlegend {
-  background: #12161b !important;        /* dark panel */
-  color: #cfd6de !important;              /* light text */
-  padding: 6px;                           /* tiny breathing room */
-}
-
-/* Labels, text, and inputs */
-.dialog .openlegend .form-group label { color: #cfd6de !important; }
-.dialog .openlegend input[type="text"],
-.dialog .openlegend input[type="number"],
-.dialog .openlegend select {
-  color: #cfd6de !important;
-  background: #1f252b !important;
-  border: 1px solid rgba(207,214,222,0.35) !important;
-}
-.dialog .openlegend ::placeholder { color: #9aa3ad !important; opacity: 1; }
-
-/* The “(+X)” upgraded hint in the Adv/Dis row */
-.dialog .openlegend .upgraded { color: #a6424a !important; }  /* burgundy */
-
-/* Dialog footer buttons: Dis [-1] | Roll | Adv [+1] */
+.openlegend .npc .npc-attributes button,
+.openlegend .item-sheet button,
+.openlegend .item-sheet .sheet-body button,
 .dialog .dialog-buttons .dialog-button {
-  color: #cfd6de !important;
-  background: #1f252b !important;
-  border: 1px solid rgba(207,214,222,0.35) !important;
-}
-.dialog .dialog-buttons .dialog-button:hover {
-  filter: brightness(1.1);
-  text-shadow: 0 0 10px red;              /* keep your red hover glow */
-}
-/* Item sheets: make the "Attacks" header + list text readable on dark BG */
-.openlegend .item-sheet .sheet-body .action-header {
-  color: #cfd6de !important;
-}
-.openlegend .item-sheet .sheet-body .action-list li,
-.openlegend .item-sheet .sheet-body .action-list .forceful {
-  color: #cfd6de !important;
+  background: rgba(36, 44, 49, 0.86) !important;
+  border: 1px solid rgba(176, 118, 104, 0.34) !important;
+  border-radius: 6px;
+  color: var(--ol-text) !important;
 }
 
-/* Edit-area labels inside the toggle section */
+.openlegend button:hover,
+.openlegend .button:hover,
+.dialog .dialog-buttons .dialog-button:hover {
+  background: var(--ol-surface-hover) !important;
+  border-color: rgba(215, 169, 97, 0.50) !important;
+  color: #ffffff !important;
+  text-shadow: 0 0 8px var(--ol-glow);
+}
+
+.openlegend .button i {
+  color: var(--ol-accent) !important;
+}
+
+/* ---------- Item Sheet Readability Fixes ---------- */
+.openlegend .item-sheet .summary {
+  height: 32px !important;
+}
+
+.openlegend .item-sheet .summary li {
+  color: var(--ol-muted) !important;
+  height: 28px !important;
+  line-height: 26px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.openlegend .item-sheet .summary li input {
+  height: 22px !important;
+  margin: 2px 4px !important;
+}
+
+.openlegend .item-sheet .summary.cost {
+  font-size: 12px !important;
+  height: 26px !important;
+}
+
+.openlegend .item-sheet .summary.cost li {
+  float: left;
+  height: 24px !important;
+  line-height: 22px !important;
+  white-space: nowrap;
+}
+
+.openlegend .item-sheet .summary.cost li:first-child {
+  text-align: left;
+  width: 44px !important;
+}
+
+.openlegend .item-sheet .summary.cost li.shrink {
+  width: 92px !important;
+}
+
+.openlegend .item-sheet .summary.cost .coin {
+  height: 20px !important;
+  margin: 1px 4px !important;
+  width: 48px !important;
+}
+
+.openlegend .item-sheet .header {
+  flex: 0 0 132px !important;
+  height: auto !important;
+  min-height: 132px !important;
+}
+
+.openlegend .item-sheet .weapon-summary li,
+.openlegend .item-sheet .sheet-body .action-header,
+.openlegend .item-sheet .sheet-body .action-list li,
+.openlegend .item-sheet .sheet-body .action-list .forceful,
 .openlegend .item-sheet .sheet-body .action-edit,
 .openlegend .item-sheet .sheet-body .action-edit label,
 .openlegend .item-sheet .sheet-body .explosion-mod label {
-  color: #cfd6de !important;
+  color: var(--ol-muted) !important;
+}
+
+.openlegend .item-sheet .action-edit select option {
+  background: var(--ol-surface-2) !important;
+  color: var(--ol-text) !important;
+}
+
+/* ---------- Dialogs ---------- */
+.dialog .openlegend {
+  padding: 6px;
+}
+
+.dialog .openlegend .form-group label {
+  color: var(--ol-text) !important;
 }

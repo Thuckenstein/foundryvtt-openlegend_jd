@@ -33,3 +33,7 @@ The game-icons-net module is no longer needed or required.  You can disable or d
 * Foundry VTT: https://foundryvtt.com/
 * Game-Icons.net: https://game-icons.net/
 * Original system by Justin Karneeb at https://gitlab.com/tabletop-creations/foundryvtt-openlegends/
+
+## Liscence
+
+* Published under the GNU GENERAL PUBLIC LICENSE (Version 3).
